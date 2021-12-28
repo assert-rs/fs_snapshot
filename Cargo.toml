@@ -12,19 +12,26 @@ keywords = ["cli", "test", "assert", "command"]
 edition = "2021"
 rust-version = "1.57.0"  # MSRV
 include = [
+  "build.rs",
   "src/**/*",
   "Cargo.toml",
   "LICENSE*",
   "README.md",
+  "benches/**/*",
   "examples/**/*"
 ]
-publish = false
 
 [package.metadata.docs.rs]
 all-features = true
 
 [package.metadata.release]
-release = false
+pre-release-replacements = [
+  {file="CHANGELOG.md", search="Unreleased", replace="{{version}}", min=1},
+  {file="CHANGELOG.md", search="\\.\\.\\.HEAD", replace="...{{tag_name}}", exactly=1},
+  {file="CHANGELOG.md", search="ReleaseDate", replace="{{date}}", min=1},
+  {file="CHANGELOG.md", search="<!-- next-header -->", replace="<!-- next-header -->\n## [Unreleased] - ReleaseDate\n", exactly=1},
+  {file="CHANGELOG.md", search="<!-- next-url -->", replace="<!-- next-url -->\n[Unreleased]: https://github.com/assert-rs/fs_snapshot/compare/{{tag_name}}...HEAD", exactly=1},
+]
 
 [features]
 default = ["color-auto", "diff"]
