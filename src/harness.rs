@@ -40,23 +40,19 @@ where
     pub fn test(self) -> ! {
         let mut walk = ignore::WalkBuilder::new(&self.root);
         walk.standard_filters(false);
-        let tests: Vec<_> = walk
-            .clone()
-            .build()
-            .filter_map(move |entry| {
-                let entry = entry.unwrap();
-                let is_dir = entry.file_type().map(|f| f.is_dir()).unwrap_or(false);
-                let path = entry.into_path();
-                if let Some(overrides) = &self.overrides {
-                    overrides
-                        .matched(&path, is_dir)
-                        .is_whitelist()
-                        .then(|| path)
-                } else {
-                    Some(path)
-                }
-            })
-            .collect();
+        let tests = walk.clone().build().filter_map(move |entry| {
+            let entry = entry.unwrap();
+            let is_dir = entry.file_type().map(|f| f.is_dir()).unwrap_or(false);
+            let path = entry.into_path();
+            if let Some(overrides) = &self.overrides {
+                overrides
+                    .matched(&path, is_dir)
+                    .is_whitelist()
+                    .then(|| path)
+            } else {
+                Some(path)
+            }
+        });
 
         let tests: Vec<_> = tests
             .into_iter()
