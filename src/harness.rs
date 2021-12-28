@@ -1,5 +1,3 @@
-use std::fmt::Write;
-
 pub struct Harness<S, T> {
     root: std::path::PathBuf,
     overrides: Option<ignore::overrides::Override>,
@@ -107,7 +105,8 @@ fn try_verify(actual: &str, case: &Case) -> Result<(), String> {
     let actual = String::from_iter(normalize_line_endings::normalized(actual.chars()));
 
     if actual != expected {
-        if cfg!(feature = "diff") {
+        #[cfg(feature = "diff")]
+        {
             let diff = crate::diff::diff(
                 &expected,
                 &actual,
@@ -116,7 +115,11 @@ fn try_verify(actual: &str, case: &Case) -> Result<(), String> {
                 palette,
             );
             Err(diff)
-        } else {
+        }
+        #[cfg(not(feature = "diff"))]
+        {
+            use std::fmt::Write;
+
             let mut buf = String::new();
             writeln!(
                 buf,

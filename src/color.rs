@@ -1,4 +1,5 @@
 #[derive(Copy, Clone, Debug, Default)]
+#[allow(dead_code)]
 pub(crate) struct Palette {
     pub(crate) info: styled::Style,
     pub(crate) error: styled::Style,
